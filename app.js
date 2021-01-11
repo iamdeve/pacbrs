@@ -4,7 +4,7 @@ const dotenv = require('dotenv').config();
 const mongoose = require('mongoose');
 const MONGOD_URI = process.env.MONGOD_URI || 'mongodb://localhost:27017/finpro';
 const cors = require('cors');
-
+const path = require('path');
 mongoose.connect(MONGOD_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: false }));
