@@ -1,0 +1,27 @@
+.Header {
+	width: 100%;
+	height: 80px;
+	padding: 1rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	border-bottom: 1px solid #eee;
+	box-shadow: 0 0 5px #ccc;
+}
+.HeaderImg {
+	width: 10rem;
+	height: 100%;
+}
+.Menu {
+	display: flex;
+	justify-content: space-between;
+}
+.Menu ul {
+	padding: 0;
+	list-style-type: none;
+	margin: 0;
+}
+
+.Menu ul li {
+	display: inline-flex;
+}
