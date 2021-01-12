@@ -123,10 +123,14 @@ function Home() {
 					setStatus(err.response.status);
 					if (err.response && err.response.data) {
 						if (err.response.data.error) {
-							if (err.response.data.error && err.response.data.error.raw) {
-								setMsg(err.response.data.error.raw.message);
+							if (err.response.data.error.message) {
+								if (err.response.data.error && err.response.data.error.raw) {
+									setMsg(err.response.data.error.raw.message);
+								} else {
+									setMsg(err.response.data.error.message);
+								}
 							} else {
-								setMsg(err.response.data.error.message);
+								setMsg(err.response.data.error);
 							}
 						} else if (err.response.data.errors) {
 							let errors = err.response.data.errors.map((err) => <li>{err.msg}</li>);
@@ -231,10 +235,14 @@ function Home() {
 									setStatus(err.response.status);
 									if (err.response && err.response.data) {
 										if (err.response.data.error) {
-											if (err.response.data.error && err.response.data.error.raw) {
-												setMsg(err.response.data.error.raw.message);
+											if (err.response.data.error.message) {
+												if (err.response.data.error && err.response.data.error.raw) {
+													setMsg(err.response.data.error.raw.message);
+												} else {
+													setMsg(err.response.data.error.message);
+												}
 											} else {
-												setMsg(err.response.data.error.message);
+												setMsg(err.response.data.error);
 											}
 										} else if (err.response.data.errors) {
 											let errors = err.response.data.errors.map((err) => <li>{err.msg}</li>);
