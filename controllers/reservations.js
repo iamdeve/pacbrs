@@ -2,9 +2,11 @@ const mongoose = require('mongoose');
 const ReservationSchema = require('../models/reservations');
 const nodemailer = require('nodemailer');
 const BikeSchema = require('../models/bike');
+const AuthSchema = require('../models/auth');
 
 const { check, validationResult } = require('express-validator');
 
+// console.log(process.env.USER_EMAIL, process.env.USER_PWD);
 var transporter = nodemailer.createTransport({
 	service: 'gmail',
 	auth: {
@@ -22,6 +24,7 @@ module.exports.reserve = async (req, res, next) => {
 	}
 
 	const { bikeId, date, userId, userEmail } = req.body;
+	let pass = req.body.pass;
 
 	try {
 		let reservation = await ReservationSchema.find({ bikeId: bikeId });
@@ -41,6 +44,15 @@ module.exports.reserve = async (req, res, next) => {
 
 			await newReservation.save();
 
+			if (req.body.pass === undefined) {
+				let user = await AuthSchema.findOne({ email: userEmail });
+				console.log(user);
+				if (user) {
+					pass = user.pass;
+				}
+			}
+
+			console.log(pass);
 			let bike = await BikeSchema.findOne({ _id: bikeId });
 			let newDate = new Date(newReservation.date).getDate() + '/' + (new Date(newReservation.date).getMonth() + 1) + '/' + new Date(newReservation.date).getFullYear();
 			let time = new Date(newReservation.date).getHours() + ':' + new Date(newReservation.date).getMinutes();
@@ -52,9 +64,11 @@ module.exports.reserve = async (req, res, next) => {
 					<h1>Welcome ${userEmail}</h1>
 					<h2>Plano Athletic Club Bike Reservation System</h2>
 					<p>Dear Customer You have booked following Bike</p>
-					<span><strong>Bike Model : </strong>${bike.bikeModel}</span>
-					<span><strong>Book Date : </strong>${newDate}</span>
-					<span><strong>Book Date : </strong>${time}</span>
+					<span><strong>Bike Model : </strong>${bike.bikeModel}</span><br/>
+					<span><strong>Book Date : </strong>${newDate}</span><br/>
+					<span><strong>Book Time : </strong>${time}</span><br/>
+					<span><strong>Username : </strong>${userEmail}</span><br/>
+					<span><strong>Password : </strong>${pass}</span><br/>
 					`,
 			};
 

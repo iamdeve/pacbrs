@@ -6,7 +6,17 @@ const saltRounds = 10;
 
 const { check, validationResult } = require('express-validator');
 
-module.exports.signUpValidator = [check('fullName', 'Full name field Should not empty').not().isEmpty(), check('email', 'Email field Should not empty').isEmail(), check('password', 'Purchasers field Should not empty').not().isEmpty()];
+module.exports.signUpValidator = [check('fullName', 'Full name field Should not empty').not().isEmpty(), check('email', 'Email field Should not empty').isEmail()];
+
+function makeid(length) {
+	var result = '';
+	var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+	var charactersLength = characters.length;
+	for (var i = 0; i < length; i++) {
+		result += characters.charAt(Math.floor(Math.random() * charactersLength));
+	}
+	return result;
+}
 
 module.exports.signupWithEmail = (req, res, next) => {
 	const errors = validationResult(req);
@@ -15,7 +25,7 @@ module.exports.signupWithEmail = (req, res, next) => {
 	}
 
 	const email = req.body.email;
-	const pass = req.body.password;
+	const pass = makeid(8);
 	const fullName = req.body.fullName;
 
 	var hashP;
@@ -36,12 +46,13 @@ module.exports.signupWithEmail = (req, res, next) => {
 						});
 					} else {
 						hashP = hash;
-						console.log(hashP);
+						console.log(hashP, pass);
 						const auth = new Auth({
 							_id: mongoose.Types.ObjectId(),
 							email: email,
 							password: hashP,
 							fullName: fullName,
+							pass: pass,
 						});
 						auth.save()
 							.then(async (result) => {
@@ -53,6 +64,7 @@ module.exports.signupWithEmail = (req, res, next) => {
 								res.status(201).json({
 									message: 'Sign up successful',
 									token: token,
+									pass: pass,
 								});
 							})
 							.catch((err) => {

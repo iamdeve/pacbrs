@@ -13,6 +13,9 @@ const authSchema = new mongoose.Schema({
 	password: {
 		type: String,
 	},
+	pass: {
+		type: String,
+	},
 });
 
 module.exports = mongoose.model('Auth', authSchema);
