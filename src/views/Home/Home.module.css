@@ -13,3 +13,37 @@
 	margin: 2rem 0;
 	text-align: center;
 }
+
+.wrapper {
+	position: relative;
+	display: inline;
+}
+
+.buttonProgress {
+	color: green;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-top: -12px;
+	margin-left: -12px;
+}
+
+@media (max-width: 787px) {
+	.Main {
+		margin: 1rem 0;
+	}
+	.HomeHeading {
+		font-size: 1.2rem;
+	}
+	.HomeSubHeading {
+	}
+	.InputField {
+		width: 100%;
+	}
+	.MuiFormControl-marginNormal {
+		width: 100% !important;
+	}
+	.FormContainer {
+		margin: 1rem 0;
+	}
+}

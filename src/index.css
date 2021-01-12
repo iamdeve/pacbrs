@@ -12,3 +12,9 @@ code {
 .MuiSelect-select.MuiSelect-select {
 	padding-right: 10rem !important;
 }
+
+@media (max-width: 787px) {
+	.MuiFormControl-marginNormal {
+		width: 100%;
+	}
+}

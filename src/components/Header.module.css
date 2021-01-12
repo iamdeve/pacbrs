@@ -26,15 +26,45 @@
 	display: inline-flex;
 }
 
-MobileMenu {
+.MobileMenuContainer {
 	display: none;
+}
+.MobileMenu {
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.7);
+	z-index: 999999;
+}
+
+.MobileMenu ul {
+	padding: 0;
+	list-style-type: none;
+	margin: 0;
+}
+.MobileMenu ul li {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	margin: 1rem 0;
+}
+.MobileMenu ul li a {
+	color: #fff;
+	font-size: 2rem;
 }
 @media (max-width: 786px) {
 	.Menu {
 		display: none;
 	}
 
-	.MobileMenu {
+	.MobileMenuContainer {
 		display: block;
+	}
+	.BtnCustom {
+		padding: 0;
 	}
 }

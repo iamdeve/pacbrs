@@ -5,8 +5,11 @@ import { Link } from 'react-router-dom';
 import { DataContext } from '../context/DataContext';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import CancelIcon from '@material-ui/icons/Cancel';
 function Header() {
 	const { state, dispatch } = React.useContext(DataContext);
+
+	const [showMenu, setShowMenu] = React.useState(false);
 
 	return (
 		<div className={classes.Header}>
@@ -33,10 +36,37 @@ function Header() {
 					</li>
 				</ul>
 			</div>
-			<div className={classes.MobleMenu}>
-				<IconButton>
+			<div className={classes.MobileMenuContainer}>
+				<IconButton onClick={() => setShowMenu(!showMenu)}>
 					<MenuIcon />
 				</IconButton>
+				{showMenu && (
+					<div className={classes.MobileMenu}>
+						<div className={['text-right', classes.Cancel].join('')}>
+							<IconButton onClick={() => setShowMenu(!showMenu)}>
+								<CancelIcon style={{ color: '#fff' }} />
+							</IconButton>
+						</div>
+						<ul>
+							<li>
+								{state.isAuthenticated ? (
+									<>
+										<Link to='reservations' className={['btn', classes.BtnCustom].join(' ')}>
+											Reservations
+										</Link>
+										<Link onClick={() => dispatch({ type: 'LOGOUT' })} className={['btn', classes.BtnCustom].join(' ')}>
+											Logout
+										</Link>
+									</>
+								) : (
+									<Link to='/login' className={['btn', classes.BtnCustom].join(' ')}>
+										Login
+									</Link>
+								)}
+							</li>
+						</ul>
+					</div>
+				)}
 			</div>
 		</div>
 	);

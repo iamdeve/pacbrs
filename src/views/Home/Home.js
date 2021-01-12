@@ -20,12 +20,14 @@ import { signup } from '../../context/user-service';
 import { DataContext } from '../../context/DataContext';
 import DialogAlert from '../../components/DialogAlert';
 import Header from '../../components/Header';
+import { CircularProgress } from '@material-ui/core';
 
 function Home() {
 	const { state, dispatch } = React.useContext(DataContext);
 	const [showAlert, setShowAlert] = React.useState(false);
 	const [status, setStatus] = React.useState('');
 	const [msg, setMsg] = React.useState('');
+	const [loading, setLoading] = React.useState(false);
 	const [reservationForm, setReservationForm] = React.useState({
 		fullName: '',
 		email: '',
@@ -72,10 +74,9 @@ function Home() {
 	const steps = getSteps;
 
 	const handleNext = async () => {
-		setActiveStep((prevActiveStep) => prevActiveStep + 1);
-
 		if (state.isAuthenticated) {
 			if (activeStep === 0) {
+				setLoading(true);
 				try {
 					console.log(reservationForm);
 
@@ -111,12 +112,14 @@ function Home() {
 						});
 						setStatus(reservation.status);
 						setShowAlert(true);
+						setLoading(false);
 						setMsg(reservation.data.message);
 					}
 				} catch (err) {
 					console.log(err);
 					console.log(err.response.status);
 					setShowAlert(true);
+					setLoading(false);
 					setStatus(err.response.status);
 					if (err.response && err.response.data) {
 						if (err.response.data.error) {
@@ -138,6 +141,7 @@ function Home() {
 			}
 		} else {
 			if (activeStep === 1) {
+				setLoading(true);
 				try {
 					console.log(reservationForm);
 
@@ -175,6 +179,7 @@ function Home() {
 							});
 							setStatus(reservation.status);
 							setShowAlert(true);
+							setLoading(false);
 							setMsg(reservation.data.message);
 						}
 					}
@@ -184,8 +189,6 @@ function Home() {
 					console.log(err.response.status);
 
 					if (err.response && err.response.data) {
-						setShowAlert(true);
-						setStatus(err.response.status);
 						if (err.response.data.error) {
 							setShowAlert(true);
 							setStatus(err.response.status);
@@ -254,9 +257,11 @@ function Home() {
 						setStatus(err.response.status);
 						setMsg(err.message);
 					}
+					setLoading(false);
 				}
 			}
 		}
+		setActiveStep((prevActiveStep) => prevActiveStep + 1);
 	};
 
 	const handleBack = () => {
@@ -408,23 +413,36 @@ function Home() {
 	if (state.isAuthenticated) {
 		if (activeStep === 0) {
 			activeStepBtn = (
-				<Button disabled={reservationForm.bikeId === '' || reservationForm.date === ''} variant='contained' color='primary' onClick={handleNext}>
-					{activeStep === steps.length - 1 ? 'Book Now' : 'Next'}
-				</Button>
+				// <Button disabled={reservationForm.bikeId === '' || reservationForm.date === ''} variant='contained' color='primary' onClick={handleNext}>
+				// 	{activeStep === steps.length - 1 ? 'Book Now' : 'Next'}
+				// </Button>
+				<div className={classes.wrapper}>
+					<Button variant='contained' color='primary' disabled={loading || reservationForm.bikeId === '' || reservationForm.date === ''} onClick={handleNext}>
+						{activeStep === steps.length - 1 ? 'Book Now' : 'Next'}
+					</Button>
+					{loading && <CircularProgress size={24} className={classes.buttonProgress} />}
+				</div>
 			);
 		}
 	} else {
 		if (activeStep === 0) {
 			activeStepBtn = (
-				<Button disabled={reservationForm.email === '' } variant='contained' color='primary' onClick={handleNext}>
+				<Button disabled={reservationForm.email === ''} variant='contained' color='primary' onClick={handleNext}>
 					{activeStep === steps.length - 1 ? 'Book Now' : 'Next'}
 				</Button>
 			);
 		} else if (activeStep === 1) {
 			activeStepBtn = (
-				<Button disabled={reservationForm.bikeId === '' || reservationForm.date === ''} variant='contained' color='primary' onClick={handleNext}>
-					{activeStep === steps.length - 1 ? 'Book Now' : 'Next'}
-				</Button>
+				// <Button disabled={reservationForm.bikeId === '' || reservationForm.date === ''} variant='contained' color='primary' onClick={handleNext}>
+				// 	{activeStep === steps.length - 1 ? 'Book Now' : 'Next'}
+				// </Button>
+
+				<div className={classes.wrapper}>
+					<Button variant='contained' color='primary' disabled={loading || reservationForm.bikeId === '' || reservationForm.date === ''} onClick={handleNext}>
+						{activeStep === steps.length - 1 ? 'Book Now' : 'Next'}
+					</Button>
+					{loading && <CircularProgress size={24} className={classes.buttonProgress} />}
+				</div>
 			);
 		}
 	}
@@ -433,8 +451,8 @@ function Home() {
 		<div className='container-fluid'>
 			<Header />
 			<div className={classes.Main}>
-				<h3 className={['text-center'].join(' ')}>Welcome to Plano Athletic Club Bike Reservation System</h3>
-				<p className={['text-center'].join(' ')}>Please select your date/time of reservation, and your bike number</p>
+				<h3 className={['text-center', classes.HomeHeading].join(' ')}>Welcome to Plano Athletic Club Bike Reservation System</h3>
+				<p className={['text-center', classes.HomeSubHeading].join(' ')}>Please select your date/time of reservation, and your bike number</p>
 				<div className={classes.FormContainer}>
 					<Stepper activeStep={activeStep} alternativeLabel>
 						{steps.map((label) => (
