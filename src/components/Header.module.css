@@ -25,3 +25,16 @@
 .Menu ul li {
 	display: inline-flex;
 }
+
+MobileMenu {
+	display: none;
+}
+@media (max-width: 786px) {
+	.Menu {
+		display: none;
+	}
+
+	.MobileMenu {
+		display: block;
+	}
+}

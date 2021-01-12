@@ -7,7 +7,6 @@ import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
 import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -21,10 +20,6 @@ import { signup } from '../../context/user-service';
 import { DataContext } from '../../context/DataContext';
 import DialogAlert from '../../components/DialogAlert';
 import Header from '../../components/Header';
-
-function getSteps() {
-	return ['Credential', 'Book a Bike'];
-}
 
 function Home() {
 	const { state, dispatch } = React.useContext(DataContext);
@@ -66,90 +61,199 @@ function Home() {
 		});
 	};
 
+	let getSteps;
+	if (state.isAuthenticated) {
+		getSteps = ['Book a Bike'];
+	} else {
+		getSteps = ['Credential', 'Book a Bike'];
+	}
+
 	const [activeStep, setActiveStep] = React.useState(0);
-	const steps = getSteps();
+	const steps = getSteps;
 
 	const handleNext = async () => {
 		setActiveStep((prevActiveStep) => prevActiveStep + 1);
-		if (activeStep === 1) {
-			try {
-				console.log(reservationForm);
 
-				let date =
-					new Date(reservationForm.date).getMonth() +
-					1 +
-					'/' +
-					new Date(reservationForm.date).getDate() +
-					'/' +
-					new Date(reservationForm.date).getFullYear() +
-					' ' +
-					new Date(reservationForm.date).getHours() +
-					':' +
-					new Date(reservationForm.date).getMinutes() +
-					':' +
-					new Date(reservationForm.date).getSeconds();
-				console.log(date);
+		if (state.isAuthenticated) {
+			if (activeStep === 0) {
+				try {
+					console.log(reservationForm);
 
-				let signupRes = await signup({ fullName: reservationForm.fullName, email: reservationForm.email, password: reservationForm.password });
+					let date =
+						new Date(reservationForm.date).getMonth() +
+						1 +
+						'/' +
+						new Date(reservationForm.date).getDate() +
+						'/' +
+						new Date(reservationForm.date).getFullYear() +
+						' ' +
+						new Date(reservationForm.date).getHours() +
+						':' +
+						new Date(reservationForm.date).getMinutes() +
+						':' +
+						new Date(reservationForm.date).getSeconds();
+					console.log(date);
 
-				if (signupRes.status === 200 || signupRes.status === 201) {
+					console.log(state.user);
 					let reservation = await reserve({
 						bikeId: reservationForm.bikeId,
 						date: reservationForm.date,
-						userId: reservationForm.userId,
+						userId: state.user.id,
+						userEmail: state.user.email,
 					});
 
 					if (reservation.status === 200) {
+						let bikes = await getBikes();
+
+						dispatch({
+							type: 'SET_BIKES',
+							payload: bikes,
+						});
+						setStatus(reservation.status);
 						setShowAlert(true);
 						setMsg(reservation.data.message);
 					}
-				}
-				return;
-			} catch (err) {
-				console.log(err);
-				console.log(err.response.status);
-
-				if (err.response && err.response.data) {
+				} catch (err) {
+					console.log(err);
+					console.log(err.response.status);
 					setShowAlert(true);
 					setStatus(err.response.status);
-					if (err.response.data.error) {
-						setShowAlert(true);
-						setStatus(err.response.status);
-						if (err.response.data.error && err.response.data.error.raw) {
-							setMsg(err.response.data.error.raw.message);
+					if (err.response && err.response.data) {
+						if (err.response.data.error) {
+							if (err.response.data.error && err.response.data.error.raw) {
+								setMsg(err.response.data.error.raw.message);
+							} else {
+								setMsg(err.response.data.error.message);
+							}
+						} else if (err.response.data.errors) {
+							let errors = err.response.data.errors.map((err) => <li>{err.msg}</li>);
+							setMsg(errors);
 						} else {
-							setMsg(err.response.data.error.message);
-						}
-					} else if (err.response.data.errors) {
-						setShowAlert(true);
-						setStatus(err.response.status);
-						let errors = err.response.data.errors.map((err) => <li>{err.msg}</li>);
-						setMsg(errors);
-					} else {
-						if (err.response.data.message === 'email already registered') {
-							try {
-								let reservation = await reserve({
-									bikeId: reservationForm.bikeId,
-									date: reservationForm.date,
-									email: reservationForm.email,
-								});
-
-								if (reservation.status === 200) {
-									setStatus(reservation.status);
-									setShowAlert(true);
-									setMsg(reservation.data.message);
-								}
-							} catch (err) {}
-						} else {
-							setShowAlert(true);
-							setStatus(err.response.status);
 							setMsg(err.response.data.message);
 						}
+					} else {
+						setMsg(err.message);
 					}
-				} else {
-					setShowAlert(true);
-					setStatus(err.response.status);
-					setMsg(err.message);
+				}
+			}
+		} else {
+			if (activeStep === 1) {
+				try {
+					console.log(reservationForm);
+
+					let date =
+						new Date(reservationForm.date).getMonth() +
+						1 +
+						'/' +
+						new Date(reservationForm.date).getDate() +
+						'/' +
+						new Date(reservationForm.date).getFullYear() +
+						' ' +
+						new Date(reservationForm.date).getHours() +
+						':' +
+						new Date(reservationForm.date).getMinutes() +
+						':' +
+						new Date(reservationForm.date).getSeconds();
+					console.log(date);
+
+					let signupRes = await signup({ fullName: reservationForm.fullName, email: reservationForm.email, password: reservationForm.password });
+
+					if (signupRes.status === 200 || signupRes.status === 201) {
+						let reservation = await reserve({
+							bikeId: reservationForm.bikeId,
+							date: reservationForm.date,
+							userEmail: reservationForm.email,
+							pass: signupRes.data.pass,
+						});
+
+						if (reservation.status === 200) {
+							let bikes = await getBikes();
+
+							dispatch({
+								type: 'SET_BIKES',
+								payload: bikes,
+							});
+							setStatus(reservation.status);
+							setShowAlert(true);
+							setMsg(reservation.data.message);
+						}
+					}
+					return;
+				} catch (err) {
+					console.log(err);
+					console.log(err.response.status);
+
+					if (err.response && err.response.data) {
+						setShowAlert(true);
+						setStatus(err.response.status);
+						if (err.response.data.error) {
+							setShowAlert(true);
+							setStatus(err.response.status);
+							if (err.response.data.error.message) {
+								if (err.response.data.error && err.response.data.error.raw) {
+									setMsg(err.response.data.error.raw.message);
+								} else {
+									setMsg(err.response.data.error.message);
+								}
+							} else {
+								setMsg(err.response.data.error);
+							}
+						} else if (err.response.data.errors) {
+							setShowAlert(true);
+							setStatus(err.response.status);
+							let errors = err.response.data.errors.map((err) => <li>{err.msg}</li>);
+							setMsg(errors);
+						} else {
+							if (err.response.data.message === 'Email already registered') {
+								try {
+									let reservation = await reserve({
+										bikeId: reservationForm.bikeId,
+										date: reservationForm.date,
+										userEmail: reservationForm.email,
+									});
+
+									if (reservation.status === 200) {
+										let bikes = await getBikes();
+
+										dispatch({
+											type: 'SET_BIKES',
+											payload: bikes,
+										});
+										setStatus(reservation.status);
+										setShowAlert(true);
+										setMsg(reservation.data.message);
+									}
+								} catch (err) {
+									setShowAlert(true);
+									setStatus(err.response.status);
+									if (err.response && err.response.data) {
+										if (err.response.data.error) {
+											if (err.response.data.error && err.response.data.error.raw) {
+												setMsg(err.response.data.error.raw.message);
+											} else {
+												setMsg(err.response.data.error.message);
+											}
+										} else if (err.response.data.errors) {
+											let errors = err.response.data.errors.map((err) => <li>{err.msg}</li>);
+											setMsg(errors);
+										} else {
+											setMsg(err.response.data.message);
+										}
+									} else {
+										setMsg(err.message);
+									}
+								}
+							} else {
+								setShowAlert(true);
+								setStatus(err.response.status);
+								setMsg(err.response.data.message);
+							}
+						}
+					} else {
+						setShowAlert(true);
+						setStatus(err.response.status);
+						setMsg(err.message);
+					}
 				}
 			}
 		}
@@ -174,10 +278,12 @@ function Home() {
 	React.useEffect(() => {
 		const fetchBikes = async () => {
 			let bikes = await getBikes();
-
 			dispatch({
 				type: 'SET_BIKES',
 				payload: bikes,
+			});
+			dispatch({
+				type: 'SET_USER',
 			});
 		};
 		fetchBikes();
@@ -187,78 +293,140 @@ function Home() {
 		setShowAlert(false);
 	};
 
-	const getStepContent = [
-		<Grid container justify='center'>
-			<div className={classes.InputField}>
-				<TextField margin='normal' name='fullName' value={reservationForm.fullName} onChange={handleChange} label='Full Name' />
-			</div>
-			<div className={classes.InputField}>
-				<TextField margin='normal' name='email' value={reservationForm.email} onChange={handleChange} label='Email' />
-			</div>
-			<div className={classes.InputField}>
-				<TextField type='password' margin='normal' name='password' value={reservationForm.password} onChange={handleChange} label='Password' />
-			</div>
-		</Grid>,
-		<MuiPickersUtilsProvider utils={DateFnsUtils}>
+	let getStepContent;
+	if (state.isAuthenticated) {
+		getStepContent = [
+			<MuiPickersUtilsProvider utils={DateFnsUtils}>
+				<Grid container justify='center'>
+					<div className={classes.InputField}>
+						<FormControl margin='normal' className={classes.formControl}>
+							<InputLabel id='demo-simple-select-label'>Bike</InputLabel>
+							<Select labelId='demo-simple-select-label' id='demo-simple-select' name='bikeId' value={reservationForm.bikeId} onChange={handleChange}>
+								{state.bikes &&
+									state.bikes.map((bike, id) => (
+										<MenuItem key={id} value={bike._id}>
+											{bike.bikeModel}
+										</MenuItem>
+									))}
+							</Select>
+						</FormControl>
+					</div>
+					<div className={classes.InputField}>
+						<KeyboardDatePicker
+							margin='normal'
+							id='date-picker-dialog'
+							label='Date'
+							name='date'
+							format='MM/dd/yyyy'
+							disablePast
+							value={reservationForm.date}
+							onChange={handleDateChange}
+							KeyboardButtonProps={{
+								'aria-label': 'change date',
+							}}
+						/>
+					</div>
+					<div className={classes.InputField}>
+						<KeyboardTimePicker
+							margin='normal'
+							id='time-picker'
+							label='Time'
+							name='time'
+							value={reservationForm.time}
+							onChange={handleTimeChange}
+							KeyboardButtonProps={{
+								'aria-label': 'change time',
+							}}
+						/>
+					</div>
+				</Grid>
+			</MuiPickersUtilsProvider>,
+		];
+	} else {
+		getStepContent = [
 			<Grid container justify='center'>
 				<div className={classes.InputField}>
-					<FormControl margin='normal' className={classes.formControl}>
-						<InputLabel id='demo-simple-select-label'>Bike</InputLabel>
-						<Select labelId='demo-simple-select-label' id='demo-simple-select' name='bikeId' value={reservationForm.bikeId} onChange={handleChange}>
-							{state.bikes &&
-								state.bikes.map((bike, id) => (
-									<MenuItem key={id} value={bike._id}>
-										{bike.bikeModel}
-									</MenuItem>
-								))}
-						</Select>
-					</FormControl>
+					<TextField margin='normal' name='fullName' value={reservationForm.fullName} onChange={handleChange} label='Full Name' />
 				</div>
 				<div className={classes.InputField}>
-					<KeyboardDatePicker
-						margin='normal'
-						id='date-picker-dialog'
-						label='Date'
-						name='date'
-						format='MM/dd/yyyy'
-						disablePast
-						value={reservationForm.date}
-						onChange={handleDateChange}
-						KeyboardButtonProps={{
-							'aria-label': 'change date',
-						}}
-					/>
+					<TextField margin='normal' name='email' value={reservationForm.email} onChange={handleChange} label='Email' />
 				</div>
-				<div className={classes.InputField}>
-					<KeyboardTimePicker
-						margin='normal'
-						id='time-picker'
-						label='Time'
-						name='time'
-						value={reservationForm.time}
-						onChange={handleTimeChange}
-						KeyboardButtonProps={{
-							'aria-label': 'change time',
-						}}
-					/>
-				</div>
-			</Grid>
-		</MuiPickersUtilsProvider>,
-	];
+				{/* <div className={classes.InputField}>
+					<TextField type='password' margin='normal' name='password' value={reservationForm.password} onChange={handleChange} label='Password' />
+				</div> */}
+			</Grid>,
+			<MuiPickersUtilsProvider utils={DateFnsUtils}>
+				<Grid container justify='center'>
+					<div className={classes.InputField}>
+						<FormControl margin='normal' className={classes.formControl}>
+							<InputLabel id='demo-simple-select-label'>Bike</InputLabel>
+							<Select labelId='demo-simple-select-label' id='demo-simple-select' name='bikeId' value={reservationForm.bikeId} onChange={handleChange}>
+								{state.bikes &&
+									state.bikes.map((bike, id) => (
+										<MenuItem key={id} value={bike._id}>
+											{bike.bikeModel}
+										</MenuItem>
+									))}
+							</Select>
+						</FormControl>
+					</div>
+					<div className={classes.InputField}>
+						<KeyboardDatePicker
+							margin='normal'
+							id='date-picker-dialog'
+							label='Date'
+							name='date'
+							format='MM/dd/yyyy'
+							disablePast
+							value={reservationForm.date}
+							onChange={handleDateChange}
+							KeyboardButtonProps={{
+								'aria-label': 'change date',
+							}}
+						/>
+					</div>
+					<div className={classes.InputField}>
+						<KeyboardTimePicker
+							margin='normal'
+							id='time-picker'
+							label='Time'
+							name='time'
+							value={reservationForm.time}
+							onChange={handleTimeChange}
+							KeyboardButtonProps={{
+								'aria-label': 'change time',
+							}}
+						/>
+					</div>
+				</Grid>
+			</MuiPickersUtilsProvider>,
+		];
+	}
 
 	let activeStepBtn;
-	if (activeStep === 0) {
-		activeStepBtn = (
-			<Button disabled={reservationForm.email === '' || reservationForm.password === ''} variant='contained' color='primary' onClick={handleNext}>
-				{activeStep === steps.length - 1 ? 'Book Now' : 'Next'}
-			</Button>
-		);
-	} else if (activeStep === 1) {
-		activeStepBtn = (
-			<Button disabled={reservationForm.bikeId === '' || reservationForm.date === ''} variant='contained' color='primary' onClick={handleNext}>
-				{activeStep === steps.length - 1 ? 'Book Now' : 'Next'}
-			</Button>
-		);
+
+	if (state.isAuthenticated) {
+		if (activeStep === 0) {
+			activeStepBtn = (
+				<Button disabled={reservationForm.bikeId === '' || reservationForm.date === ''} variant='contained' color='primary' onClick={handleNext}>
+					{activeStep === steps.length - 1 ? 'Book Now' : 'Next'}
+				</Button>
+			);
+		}
+	} else {
+		if (activeStep === 0) {
+			activeStepBtn = (
+				<Button disabled={reservationForm.email === '' } variant='contained' color='primary' onClick={handleNext}>
+					{activeStep === steps.length - 1 ? 'Book Now' : 'Next'}
+				</Button>
+			);
+		} else if (activeStep === 1) {
+			activeStepBtn = (
+				<Button disabled={reservationForm.bikeId === '' || reservationForm.date === ''} variant='contained' color='primary' onClick={handleNext}>
+					{activeStep === steps.length - 1 ? 'Book Now' : 'Next'}
+				</Button>
+			);
+		}
 	}
 
 	return (
@@ -277,10 +445,11 @@ function Home() {
 					</Stepper>
 					<div>
 						{activeStep === steps.length ? (
-							<div className={['mt-5 mb-5', classes.StepperBtnGroup].join(' ')}>
-								<Typography className={classes.instructions}>All steps completed</Typography>
-								<Button onClick={handleReset}>Reset</Button>
-							</div>
+							// <div className={['mt-5 mb-5', classes.StepperBtnGroup].join(' ')}>
+							// 	<Typography className={classes.instructions}>All steps completed</Typography>
+							// 	<Button onClick={handleReset}>Reset</Button>
+							// </div>
+							<div>{handleReset()}</div>
 						) : (
 							<div>
 								<div className={classes.StepContext}>{getStepContent[activeStep]}</div>

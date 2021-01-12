@@ -1,17 +1,20 @@
 import React from 'react';
-
+import jwtDecode from 'jwt-decode';
 export const initialState = {
 	isAuthenticated: localStorage.getItem('pacbrsToken') ? true : false,
-	user: localStorage.getItem('pacbrsUser') ? JSON.parse(localStorage.getItem('pacbrsUser')) : null,
+	user: getCurrentUser(),
 	token: localStorage.getItem('pacbrsToken') ? localStorage.getItem('pacbrsToken') : null,
 	bikes: [],
+	userReservations: [],
+	allBikes: [],
 };
+
 export const DataContext = React.createContext();
 
 export const reducer = (state, action) => {
 	switch (action.type) {
 		case 'LOGIN':
-			localStorage.setItem('pacbrsToken', action.payload.token);
+			localStorage.setItem('pacbrsToken', action.payload);
 			return {
 				...state,
 				isAuthenticated: true,
@@ -26,19 +29,40 @@ export const reducer = (state, action) => {
 				user: null,
 				token: null,
 			};
-		case 'SET_USER':
-			localStorage.setItem('pacbrsUser', JSON.stringify(action.payload));
-			return {
-				...state,
-				user: action.payload,
-			};
 		case 'SET_BIKES':
 			return {
 				...state,
 				bikes: action.payload,
 			};
+		case 'SET_ALL_BIKES':
+			return {
+				...state,
+				allBikes: action.payload,
+			};
+
+		case 'SET_USER_RESERVATION':
+			return {
+				...state,
+				userReservations: action.payload,
+			};
+
+		case 'SET_USER': {
+			return {
+				...state,
+				user: getCurrentUser(),
+			};
+		}
 
 		default:
 			return state;
 	}
 };
+
+export function getCurrentUser() {
+	try {
+		const jwt = localStorage.getItem('pacbrsToken');
+		return jwtDecode(jwt);
+	} catch (e) {
+		return null;
+	}
+}

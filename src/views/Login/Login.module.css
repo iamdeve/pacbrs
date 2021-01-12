@@ -1,0 +1,10 @@
+.Main {
+	margin: 2rem 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.InputFieldSubmit {
+	margin: 1rem 0;
+}
