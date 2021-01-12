@@ -14,8 +14,8 @@ var transporter = nodemailer.createTransport({
 	ignoreTLS: false,
 	secure: false,
 	auth: {
-		user: process.env.USER_EMAIL,
-		pass: process.env.USER_PWD,
+		user: 'imwebdeve@gmail.com',
+		pass: '01*nimaYnisaY#08',
 	},
 });
 
