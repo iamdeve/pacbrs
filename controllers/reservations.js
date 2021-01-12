@@ -6,7 +6,7 @@ const AuthSchema = require('../models/auth');
 
 const { check, validationResult } = require('express-validator');
 
-// console.log(process.env.USER_EMAIL, process.env.USER_PWD);
+console.log(process.env.USER_EMAIL, process.env.USER_PWD);
 var transporter = nodemailer.createTransport({
 	service: 'gmail',
 	auth: {
