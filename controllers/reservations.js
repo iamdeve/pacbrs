@@ -1,7 +1,17 @@
 const mongoose = require('mongoose');
 const ReservationSchema = require('../models/reservations');
+const nodemailer = require('nodemailer');
+const BikeSchema = require('../models/bike');
 
 const { check, validationResult } = require('express-validator');
+
+var transporter = nodemailer.createTransport({
+	service: 'gmail',
+	auth: {
+		user: process.env.USER_EMAIL,
+		pass: process.env.USER_PWD,
+	},
+});
 
 module.exports.reserveValidation = [check('bikeId', 'Bike field should not empty').not().isEmpty(), check('date', 'date field should not empty').not().isEmpty()];
 
@@ -11,7 +21,7 @@ module.exports.reserve = async (req, res, next) => {
 		return res.status(400).json({ errors: errors.array() });
 	}
 
-	const { bikeId, date, userId, email } = req.body;
+	const { bikeId, date, userId, userEmail } = req.body;
 
 	try {
 		let reservation = await ReservationSchema.find({ bikeId: bikeId });
@@ -24,15 +34,41 @@ module.exports.reserve = async (req, res, next) => {
 			let newReservation = new ReservationSchema({
 				_id: mongoose.Types.ObjectId(),
 				userId: userId,
-				userEmail: email,
+				userEmail: userEmail,
 				bikeId: bikeId,
 				date: date,
 			});
 
 			await newReservation.save();
 
-			return res.status(200).json({
-				message: 'Bike reserved successfully',
+			let bike = await BikeSchema.findOne({ _id: bikeId });
+			let newDate = new Date(newReservation.date).getDate() + '/' + (new Date(newReservation.date).getMonth() + 1) + '/' + new Date(newReservation.date).getFullYear();
+			let time = new Date(newReservation.date).getHours() + ':' + new Date(newReservation.date).getMinutes();
+			var mailOptions = {
+				from: process.env.USER_EMAIL,
+				to: userEmail,
+				subject: 'Plano Athletic Club Bike Reservation System',
+				html: `
+					<h1>Welcome ${userEmail}</h1>
+					<h2>Plano Athletic Club Bike Reservation System</h2>
+					<p>Dear Customer You have booked following Bike</p>
+					<span><strong>Bike Model : </strong>${bike.bikeModel}</span>
+					<span><strong>Book Date : </strong>${newDate}</span>
+					<span><strong>Book Date : </strong>${time}</span>
+					`,
+			};
+
+			transporter.sendMail(mailOptions, function (error, info) {
+				if (error) {
+					return res.status(500).json({
+						error: error.message ? error.message : error,
+					});
+				} else {
+					console.log('Email sent: ' + info.response);
+					return res.status(200).json({
+						message: 'Bike reserved successfully Please check you remail',
+					});
+				}
 			});
 		}
 	} catch (err) {
@@ -45,7 +81,7 @@ module.exports.get = async (req, res, next) => {
 	let userId = req.user.id;
 	if (userId) {
 		try {
-			let reservations = await ReservationSchema.find({ userId: userId });
+			let reservations = await ReservationSchema.find({ $or: [{ userId: userId }, { userEmail: req.user.email }] });
 			// console.log(reservations);
 			if (reservations) {
 				return res.status(200).json({
@@ -61,6 +97,33 @@ module.exports.get = async (req, res, next) => {
 	} else {
 		return res.status(500).json({
 			error: 'No user found',
+		});
+	}
+};
+
+module.exports.delete = async (req, res, next) => {
+	let userId = req.user.id;
+
+	if (req.params.id === null || req.params.id === undefined || req.params.id === '') {
+		res.status(500).json({ message: 'Payload should not be empty' });
+	}
+
+	let reservationId = req.params.id;
+	try {
+		let reservations = await ReservationSchema.findOneAndDelete({ _id: reservationId });
+
+		if (reservations) {
+			return res.status(200).json({
+				message: 'Reservation Deleted Successfully',
+			});
+		} else {
+			return res.status(500).json({
+				error: 'no result found',
+			});
+		}
+	} catch (err) {
+		return res.status(500).json({
+			error: err.message ? err.message : err,
 		});
 	}
 };

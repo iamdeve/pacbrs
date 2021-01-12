@@ -21,24 +21,24 @@ app.use(`${route}/reservation`, reservationRoute);
 const bikeRoute = require('./routes/bike');
 app.use(`${route}/bike`, bikeRoute);
 
-app.use((req, res, next) => {
-	const error = new Error('route not found');
-	error.status = 404;
-	next(error);
-});
+// app.use((req, res, next) => {
+// 	const error = new Error('route not found');
+// 	error.status = 404;
+// 	next(error);
+// });
 
-app.use((error, req, res, next) => {
-	res.status(error.status || 500);
-	res.json({
-		error: {
-			message: error.message,
-		},
-	});
-});
+// app.use((error, req, res, next) => {
+// 	res.status(error.status || 500);
+// 	res.json({
+// 		error: {
+// 			message: error.message,
+// 		},
+// 	});
+// });
 
 app.use(express.static(path.join(__dirname, 'build')));
 
-app.get('/*', (req, res) => {
+app.get('/client/home', (req, res) => {
 	res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 

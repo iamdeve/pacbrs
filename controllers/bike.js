@@ -82,7 +82,23 @@ module.exports.delete = async (req, res, next) => {
 		}
 	} catch (err) {
 		return res.status(500).json({
-			error: err,
+			error: err.message ? err.message : err,
+		});
+	}
+};
+
+module.exports.all = async (req, res, next) => {
+	try {
+		let bikes = await BikeSchema.find();
+
+		if (bikes) {
+			return res.status(200).json({
+				allBikes: bikes,
+			});
+		}
+	} catch (err) {
+		return res.status(500).json({
+			error: err.message ? err.message : err,
 		});
 	}
 };

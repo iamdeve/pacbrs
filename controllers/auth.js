@@ -25,7 +25,7 @@ module.exports.signupWithEmail = (req, res, next) => {
 			if (result && result.email != '') {
 				console.log('already');
 				return res.status(500).json({
-					message: 'email already registered',
+					message: 'Email already registered',
 				});
 			} else {
 				await bcrypt.hash(pass, saltRounds, function (err, hash) {
@@ -51,7 +51,7 @@ module.exports.signupWithEmail = (req, res, next) => {
 								const fullName = result.fullName;
 								const token = await jwt.sign({ id, email, password, fullName }, process.env.JWT_SECRET, { expiresIn: '60d' });
 								res.status(201).json({
-									message: 'sign up successful',
+									message: 'Sign up successful',
 									token: token,
 								});
 							})
@@ -103,14 +103,14 @@ module.exports.loginWithEmail = (req, res, next) => {
 							});
 						} else {
 							return res.status(500).json({
-								message: 'invalid Password',
+								message: 'Invalid Password',
 							});
 						}
 					}
 				});
 			} else {
 				return res.status(500).json({
-					message: 'invalid email',
+					message: 'Invalid email',
 				});
 			}
 		})
