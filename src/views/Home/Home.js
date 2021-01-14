@@ -81,8 +81,8 @@ function Home() {
 					// console.log(reservationForm);
 					console.log(reservationForm.date);
 					let date = new Date(reservationForm.date).getMonth() + 1 + '/' + new Date(reservationForm.date).getDate() + '/' + new Date(reservationForm.date).getFullYear();
-					let h = new Date(reservationForm.date).getHours() > 0 && new Date(reservationForm.date).getHours() < 10 ? '0' + new Date(reservationForm.date).getHours() : new Date(reservationForm.date).getHours();
-					let m = new Date(reservationForm.date).getMinutes() > 0 && new Date(reservationForm.date).getMinutes() < 10 ? '0' + new Date(reservationForm.date).getMinutes() : new Date(reservationForm.date).getMinutes();
+					let h = new Date(reservationForm.time).getHours() > 0 && new Date(reservationForm.time).getHours() < 10 ? '0' + new Date(reservationForm.time).getHours() : new Date(reservationForm.time).getHours();
+					let m = new Date(reservationForm.time).getMinutes() > 0 && new Date(reservationForm.time).getMinutes() < 10 ? '0' + new Date(reservationForm.time).getMinutes() : new Date(reservationForm.time).getMinutes();
 
 					date = date + ' ' + h + ':' + m;
 					console.log(date);
@@ -142,8 +142,8 @@ function Home() {
 					console.log(reservationForm.date);
 
 					let date = new Date(reservationForm.date).getMonth() + 1 + '/' + new Date(reservationForm.date).getDate() + '/' + new Date(reservationForm.date).getFullYear();
-					let h = new Date(reservationForm.date).getHours() > 0 && new Date(reservationForm.date).getHours() < 10 ? '0' + new Date(reservationForm.date).getHours() : new Date(reservationForm.date).getHours();
-					let m = new Date(reservationForm.date).getMinutes() > 0 && new Date(reservationForm.date).getMinutes() < 10 ? '0' + new Date(reservationForm.date).getMinutes() : new Date(reservationForm.date).getMinutes();
+					let h = new Date(reservationForm.time).getHours() > 0 && new Date(reservationForm.time).getHours() < 10 ? '0' + new Date(reservationForm.time).getHours() : new Date(reservationForm.time).getHours();
+					let m = new Date(reservationForm.time).getMinutes() > 0 && new Date(reservationForm.time).getMinutes() < 10 ? '0' + new Date(reservationForm.time).getMinutes() : new Date(reservationForm.time).getMinutes();
 
 					date = date + ' ' + h + ':' + m;
 					console.log(date);
