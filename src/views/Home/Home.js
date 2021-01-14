@@ -197,9 +197,15 @@ function Home() {
 						} else {
 							if (err.response.data.message === 'Email already registered') {
 								try {
+									let date = new Date(reservationForm.date).getMonth() + 1 + '/' + new Date(reservationForm.date).getDate() + '/' + new Date(reservationForm.date).getFullYear();
+									let h = new Date(reservationForm.time).getHours() > 0 && new Date(reservationForm.time).getHours() < 10 ? '0' + new Date(reservationForm.time).getHours() : new Date(reservationForm.time).getHours();
+									let m = new Date(reservationForm.time).getMinutes() > 0 && new Date(reservationForm.time).getMinutes() < 10 ? '0' + new Date(reservationForm.time).getMinutes() : new Date(reservationForm.time).getMinutes();
+
+									date = date + ' ' + h + ':' + m;
+									console.log(date);
 									let reservation = await reserve({
 										bikeId: reservationForm.bikeId,
-										date: reservationForm.date,
+										date: date,
 										userEmail: reservationForm.email,
 									});
 
