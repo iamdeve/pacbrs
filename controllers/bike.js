@@ -43,14 +43,14 @@ module.exports.add = async (req, res, next) => {
 };
 module.exports.get = async (req, res, next) => {
 	try {
-		let reservation = await ReservationSchema.find();
+		// let reservation = await ReservationSchema.find();
 		let bikes = await BikeSchema.find();
 
-		for (let i = 0; i < reservation.length; i++) {
-			bikes = bikes.filter((bike) => {
-				return bike._id.toString() !== reservation[i].bikeId.toString();
-			});
-		}
+		// for (let i = 0; i < reservation.length; i++) {
+		// 	bikes = bikes.filter((bike) => {
+		// 		return bike._id.toString() !== reservation[i].bikeId.toString();
+		// 	});
+		// }
 		if (bikes) {
 			return res.status(200).json({
 				bikes,
