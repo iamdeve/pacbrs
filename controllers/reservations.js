@@ -7,6 +7,18 @@ const AuthSchema = require('../models/auth');
 const { check, validationResult } = require('express-validator');
 
 console.log(process.env.USER_EMAIL, process.env.USER_PWD);
+// var transporter = nodemailer.createTransport({
+// 	service: 'gmail',
+// 	host: 'smtp.gmail.com',
+// 	port: 587,
+// 	ignoreTLS: false,
+// 	secure: false,
+// 	auth: {
+// 		user: 'imwebdeve@gmail.com',
+// 		pass: '01*nimaYnisaY#08',
+// 	},
+// });
+
 var transporter = nodemailer.createTransport({
 	service: 'gmail',
 	host: 'smtp.gmail.com',
@@ -14,8 +26,8 @@ var transporter = nodemailer.createTransport({
 	ignoreTLS: false,
 	secure: false,
 	auth: {
-		user: 'imwebdeve@gmail.com',
-		pass: '01*nimaYnisaY#08',
+		user: 'support@pacbrs.com',
+		pass: 'Zuxtox-xykti4-tovseb',
 	},
 });
 
