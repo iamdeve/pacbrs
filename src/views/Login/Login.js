@@ -85,7 +85,7 @@ function Login() {
 			<Header />
 			<div className={classes.Main}>
 				<div className={classes.FormContainer}>
-					<h4>Please Login</h4>
+					<h4>Please Log In</h4>
 					<form onSubmit={handleSubmit}>
 						<div className={classes.InputField}>
 							<TextField type='email' margin='normal' name='email' value={loginForm.email} onChange={handleChange} label='Email' required />

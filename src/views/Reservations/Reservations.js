@@ -16,6 +16,7 @@ import { deleteReservation } from '../../context/user-service';
 import { DataContext } from '../../context/DataContext';
 import DialogAlert from '../../components/DialogAlert';
 import { useHistory } from 'react-router-dom';
+import moment from 'moment';
 
 function Reservations() {
 	const history = useHistory();
@@ -105,7 +106,7 @@ function Reservations() {
 											{state.allBikes.length > 0 && state.allBikes.filter((b) => b._id.toString() === row.bikeId.toString())[0].bikeLabel}
 										</TableCell>
 										<TableCell>{state.allBikes.length > 0 && state.allBikes.filter((b) => b._id.toString() === row.bikeId.toString())[0].bikeModel}</TableCell>
-										<TableCell>{row.date}</TableCell>
+										<TableCell>{moment(row.date).format('YYYY-MM-DD,hh:mm A')}</TableCell>
 										<TableCell align='right'>
 											<IconButton onClick={() => deleteRes(row._id)}>
 												<DeleteOutlineOutlinedIcon style={{ color: 'red' }} color='primary' />

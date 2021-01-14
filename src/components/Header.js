@@ -51,16 +51,16 @@ function Header() {
 							<li>
 								{state.isAuthenticated ? (
 									<>
-										<Link to='reservations' className={['btn', classes.BtnCustom].join(' ')}>
+										<Link to='reservations' className={['btn', classes.BtnCustom, classes.BtnCustomMobile].join(' ')}>
 											Reservations
 										</Link>
-										<Link onClick={() => dispatch({ type: 'LOGOUT' })} className={['btn', classes.BtnCustom].join(' ')}>
+										<Link onClick={() => dispatch({ type: 'LOGOUT' })} className={['btn', classes.BtnCustom, classes.BtnCustomMobile].join(' ')}>
 											Logout
 										</Link>
 									</>
 								) : (
-									<Link to='/login' className={['btn', classes.BtnCustom].join(' ')}>
-										Login
+									<Link to='/login' className={['btn', classes.BtnCustom, classes.BtnCustomMobile].join(' ')}>
+										Log In
 									</Link>
 								)}
 							</li>

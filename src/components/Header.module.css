@@ -54,8 +54,10 @@
 }
 .MobileMenu ul li a {
 	color: #fff;
-	font-size: 2rem;
+	font-size: 1.5rem;
+	width: 60%;
 }
+
 @media (max-width: 786px) {
 	.Menu {
 		display: none;
@@ -66,5 +68,13 @@
 	}
 	.BtnCustom {
 		padding: 0;
+	}
+	.BtnCustomMobile {
+		border: 2px solid #fff !important;
+		color: #fff !important;
+		font-size: 1.5rem !important;
+		padding: 0.5rem !important;
+		margin: 0.5rem !important;
+		background: grey !important;
 	}
 }

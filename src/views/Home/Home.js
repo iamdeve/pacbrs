@@ -78,27 +78,19 @@ function Home() {
 			if (activeStep === 0) {
 				setLoading(true);
 				try {
-					console.log(reservationForm);
+					// console.log(reservationForm);
+					console.log(reservationForm.date);
+					let date = new Date(reservationForm.date).getMonth() + 1 + '/' + new Date(reservationForm.date).getDate() + '/' + new Date(reservationForm.date).getFullYear();
+					let h = new Date(reservationForm.date).getHours() > 0 && new Date(reservationForm.date).getHours() < 10 ? '0' + new Date(reservationForm.date).getHours() : new Date(reservationForm.date).getHours();
+					let m = new Date(reservationForm.date).getMinutes() > 0 && new Date(reservationForm.date).getMinutes() < 10 ? '0' + new Date(reservationForm.date).getMinutes() : new Date(reservationForm.date).getMinutes();
 
-					let date =
-						new Date(reservationForm.date).getMonth() +
-						1 +
-						'/' +
-						new Date(reservationForm.date).getDate() +
-						'/' +
-						new Date(reservationForm.date).getFullYear() +
-						' ' +
-						new Date(reservationForm.date).getHours() +
-						':' +
-						new Date(reservationForm.date).getMinutes() +
-						':' +
-						new Date(reservationForm.date).getSeconds();
+					date = date + ' ' + h + ':' + m;
 					console.log(date);
 
 					console.log(state.user);
 					let reservation = await reserve({
 						bikeId: reservationForm.bikeId,
-						date: reservationForm.date,
+						date: date,
 						userId: state.user.id,
 						userEmail: state.user.email,
 					});
@@ -147,21 +139,13 @@ function Home() {
 			if (activeStep === 1) {
 				setLoading(true);
 				try {
-					console.log(reservationForm);
+					console.log(reservationForm.date);
 
-					let date =
-						new Date(reservationForm.date).getMonth() +
-						1 +
-						'/' +
-						new Date(reservationForm.date).getDate() +
-						'/' +
-						new Date(reservationForm.date).getFullYear() +
-						' ' +
-						new Date(reservationForm.date).getHours() +
-						':' +
-						new Date(reservationForm.date).getMinutes() +
-						':' +
-						new Date(reservationForm.date).getSeconds();
+					let date = new Date(reservationForm.date).getMonth() + 1 + '/' + new Date(reservationForm.date).getDate() + '/' + new Date(reservationForm.date).getFullYear();
+					let h = new Date(reservationForm.date).getHours() > 0 && new Date(reservationForm.date).getHours() < 10 ? '0' + new Date(reservationForm.date).getHours() : new Date(reservationForm.date).getHours();
+					let m = new Date(reservationForm.date).getMinutes() > 0 && new Date(reservationForm.date).getMinutes() < 10 ? '0' + new Date(reservationForm.date).getMinutes() : new Date(reservationForm.date).getMinutes();
+
+					date = date + ' ' + h + ':' + m;
 					console.log(date);
 
 					let signupRes = await signup({ fullName: reservationForm.fullName, email: reservationForm.email, password: reservationForm.password });
@@ -169,7 +153,7 @@ function Home() {
 					if (signupRes.status === 200 || signupRes.status === 201) {
 						let reservation = await reserve({
 							bikeId: reservationForm.bikeId,
-							date: reservationForm.date,
+							date: date,
 							userEmail: reservationForm.email,
 							pass: signupRes.data.pass,
 						});
